@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#03A9F4</item>
+        <item name="colorPrimaryDark">#0288D1</item>
+        <item name="colorAccent">#536DFE</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="CircularTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">#03A9F4</item>
+    </style>
+
+    <style name="HorizontalTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">#0288D1</item>
+    </style>
+
+    <color name="black">#000000</color>
+
+</resources>
