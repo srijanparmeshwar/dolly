@@ -18,6 +18,7 @@ import android.widget.Toast;
  * Created by Srijan on 03/04/2017.
  */
 public class PermissionsHandler implements ActivityCompat.OnRequestPermissionsResultCallback {
+
     private final AppCompatActivity activity;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 2;

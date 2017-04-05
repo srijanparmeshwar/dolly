@@ -17,7 +17,6 @@ import org.opencv.android.OpenCVLoader;
 
 import camera.CameraCallback;
 import camera.ImageState;
-import camera.Stereo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,10 +40,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle(R.string.app_name);
-        //setActionBar(toolbar);
 
         permissionsHandler = new PermissionsHandler(this);
 
@@ -79,16 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
     @Override

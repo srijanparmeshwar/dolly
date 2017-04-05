@@ -26,7 +26,7 @@ public class OpticalFlow {
         flowAlgorithm.setEpsilon(0.05);
         flowAlgorithm.setTheta(0.3);
         flowAlgorithm.setScaleStep(0.5);
-        flowAlgorithm.setScalesNumber(4);
+        flowAlgorithm.setScalesNumber(3);
         flowAlgorithm.setWarpingsNumber(3);
     }
 
@@ -38,13 +38,6 @@ public class OpticalFlow {
         Imgproc.resize(flow, flow, new Size(), 8, 8, Imgproc.INTER_LINEAR);
 
         if (DEBUG) {
-            /*List<Mat> channels = splitChannels(flow, 2);
-            Mat normalisedFlowX = abs(channels.get(0));
-            Mat normalisedFlowY = abs(channels.get(1));
-
-            ImageUtils.save("testX.jpg", normalisedFlowX);
-            ImageUtils.save("testY.jpg", normalisedFlowY);*/
-
             List<Mat> channels = ImageUtils.splitChannels(flow, 2);
             channels.add(Mat.zeros(channels.get(0).size(), channels.get(0).type()));
 

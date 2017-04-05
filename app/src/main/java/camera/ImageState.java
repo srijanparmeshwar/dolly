@@ -38,8 +38,10 @@ public class ImageState {
         this.opticalFlow = new OpticalFlow();
         this.stereo = new Stereo(host);
 
+        // Initialise state as prepared for capture of left view.
         this.progress = LEFT;
 
+        // Set preview transparencies.
         this.leftPreview.setAlpha(0.65f);
         this.rightPreview.setAlpha(0.65f);
     }
@@ -110,9 +112,15 @@ public class ImageState {
         rightFrame = frame;
         updatePreview(rightPreview, ImageUtils.convertToBitmap(ImageUtils.preview(rightFrame)));
         showRight();
+
+        // Show loading bar.
         showProgress();
+
+        // Calculate and render sequence.
         Mat flow = opticalFlow.calculateFlow(leftFrame, rightFrame);
         List<Mat> extrinsics = stereo.calculateExtrinsics(flow);
+
+        // Hide loading bar and left and right previews on completion.
         hideAll();
     }
 }
