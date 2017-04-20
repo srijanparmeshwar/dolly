@@ -8,18 +8,14 @@ import android.widget.ProgressBar;
 
 import org.opencv.core.Mat;
 
-import java.util.List;
-
 /**
- * Created by Srijan on 04/04/2017.
+ * Handles the current state of the application.
  */
 public class ImageState {
     private final Activity host;
     private final ImageView leftPreview;
     private final ImageView rightPreview;
     private final ProgressBar progressBar;
-    private final OpticalFlow opticalFlow;
-    private final Stereo stereo;
 
     private int progress;
     private Mat leftFrame;
@@ -35,8 +31,6 @@ public class ImageState {
         this.leftPreview = leftPreview;
         this.rightPreview = rightPreview;
         this.progressBar = progressBar;
-        this.opticalFlow = new OpticalFlow();
-        this.stereo = new Stereo(host);
 
         // Initialise state as prepared for capture of left view.
         this.progress = LEFT;
@@ -103,12 +97,14 @@ public class ImageState {
     }
 
     private void handleLeftFrame(Mat frame) {
+        // Update left frame.
         leftFrame = frame;
         updatePreview(leftPreview, ImageUtils.convertToBitmap(ImageUtils.preview(leftFrame)));
         showLeft();
     }
 
     private void handleRightFrame(Mat frame) {
+        // Update right frame.
         rightFrame = frame;
         updatePreview(rightPreview, ImageUtils.convertToBitmap(ImageUtils.preview(rightFrame)));
         showRight();
@@ -116,9 +112,8 @@ public class ImageState {
         // Show loading bar.
         showProgress();
 
-        // Calculate and render sequence.
-        Mat flow = opticalFlow.calculateFlow(leftFrame, rightFrame);
-        List<Mat> extrinsics = stereo.calculateExtrinsics(flow);
+        // Render sequence.
+        DollyJNI.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getPath("test.jpg"));
 
         // Hide loading bar and left and right previews on completion.
         hideAll();

@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Rect;
@@ -16,45 +14,32 @@ import org.opencv.imgproc.Imgproc;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by Srijan on 04/04/2017.
+ * OpenCV image utility functions in Java.
  */
 public class ImageUtils {
 
+    // Filename constants to create new image names.
     private static final DateFormat FILENAME_FORMAT = new SimpleDateFormat("'IMG_'yyyy-MM-dd-HH-mm-ss'.jpg'", Locale.UK);
     private static final String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Dolly";
 
-    public static Mat rgb2gray(Mat rgb, double scale) {
-        Mat gray = new Mat();
-        Imgproc.cvtColor(rgb, gray, Imgproc.COLOR_RGB2GRAY);
-        gray.convertTo(gray, CvType.CV_32FC3);
-        Imgproc.resize(gray, gray, new Size(), scale, scale, Imgproc.INTER_LINEAR);
-        return gray;
-    }
-
-    public static List<Mat> splitChannels(Mat image, int N) {
-        List<Mat> channels = new ArrayList<>(N);
-        channels.add(new Mat());
-        channels.add(new Mat());
-        Core.split(image, channels);
-        return channels;
-    }
-
-    public static Mat abs(Mat image) {
-        Mat absImage = new Mat();
-        Core.convertScaleAbs(image, absImage);
-        return absImage;
-    }
-
+    /**
+     * Convert byte array format of an image into OpenCV {@link Mat}.
+     * @param data Byte array of image.
+     * @return {@link Mat} of image.
+     */
     public static Mat decode(byte[] data) {
         return Imgcodecs.imdecode(new MatOfByte(data), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }
 
+    /**
+     * Create small preview of image.
+     * @param frame Original size image.
+     * @return Reduced size image.
+     */
     public static Mat preview(Mat frame) {
         int width = frame.width();
         int height = frame.height();
@@ -101,4 +86,11 @@ public class ImageUtils {
         Imgcodecs.imwrite(directoryPath + "/" + filename, image);
     }
 
+    public static String getPath() {
+        return getPath(FILENAME_FORMAT.format(new Date()));
+    }
+
+    public static String getPath(String filename) {
+        return directoryPath + "/" + filename;
+    }
 }

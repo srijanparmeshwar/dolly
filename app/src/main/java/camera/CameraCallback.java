@@ -7,7 +7,7 @@ import com.google.android.cameraview.CameraView;
 import srijanparmeshwar.dolly.HandlerUtils;
 
 /**
- * Created by Srijan on 03/04/2017.
+ * Handles CameraView callbacks.
  */
 public class CameraCallback extends CameraView.Callback {
 
