@@ -11,15 +11,29 @@ public class DollyJNI {
     }
 
     /**
-     * Renders a video created from a left frame and right frame, and saves it to the specified
-     * path.
-     * @param leftFrame - address of left frame.
-     * @param rightFrame - address of right frame.
+     * Creates Renderer object using JNI.
+     * @param leftFrame Address of left frame.
+     * @param rightFrame Address of right frame.
+     * @param targetSize Target size of object to keep constant.
+     * @param targetDistance Target distance of object.
+     * @param fps Frame rate of video in frames per second.
+     * @param length Length of video in seconds.
+     * @param path Forwards or backwards (true for forwards, false for backwards).
+     * @return Native address of Renderer.
      */
     public native static long create(long leftFrame, long rightFrame, float targetSize, float targetDistance, float fps, float length, boolean path);
 
+    /**
+     * Calculate the depth map from the input stereo views.
+     * @param address Native address of Renderer.
+     */
     public native static void process(long address);
 
+    /**
+     * Render and save video to given path.
+     * @param address Native address of Renderer.
+     * @param path File path to save the video.
+     */
     public native static void render(long address, String path);
 
 }

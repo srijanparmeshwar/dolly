@@ -3,7 +3,7 @@ package camera;
 import java.io.IOException;
 
 public class Renderer {
-    public static void render(long leftFrame, long rightFrame, String path) throws IOException {
+    public static void render(long leftFrame, long rightFrame, String path) {
         float fps = 30;
         float length = 2;
         int N = (int) (fps * length);

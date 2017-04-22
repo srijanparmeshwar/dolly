@@ -1,9 +1,12 @@
 package srijanparmeshwar.dolly;
 
+import android.app.Dialog;
 import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     static {
         if(!OpenCVLoader.initDebug()){
-            Log.d(TAG, "OpenCV not loaded");
+            Log.d(TAG, "OpenCV not loaded.");
         } else {
-            Log.d(TAG, "OpenCV loaded");
+            Log.d(TAG, "OpenCV loaded.");
         }
     }
 
@@ -48,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
         ImageView left = (ImageView) findViewById(R.id.left_preview);
         ImageView right = (ImageView) findViewById(R.id.right_preview);
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        cameraView = (CameraView) findViewById(R.id.camera);
+
         imageState = new ImageState(this, left, right, progressBar);
 
-        cameraView = (CameraView) findViewById(R.id.camera);
         cameraView.addCallback(new CameraCallback(imageState));
 
         button = (FloatingActionButton) findViewById(R.id.take_picture);
@@ -58,11 +62,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (permissionsHandler.checkWritePermissions()) {
+                    // Toggle autofocus for left and right views.
+                    cameraView.setAutoFocus(!cameraView.getAutoFocus());
                     cameraView.takePicture();
                     shutter.play(MediaActionSound.SHUTTER_CLICK);
                 }
             }
         });
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
     }
 
     @Override
@@ -72,8 +85,27 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void showDialog(String title, String filename) {
+        Dialog dialog = TextDialog.create(this, title, filename);
+        dialog.show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                // Help view.
+                showDialog("Help", "HELP.md");
+                break;
+            case R.id.action_privacy:
+                // Privacy view.
+                showDialog("Privacy", "PRIVACY.md");
+                break;
+            case R.id.action_licenses:
+                // Licenses view.
+                showDialog("Licenses", "LICENSES.md");
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 

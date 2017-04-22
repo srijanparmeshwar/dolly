@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 public class ImageUtils {
 
-    // Filename constants to create new image names.
+    // Filename constants to create new file names.
     private static final DateFormat IMAGE_FILENAME_FORMAT = new SimpleDateFormat("'IMG_'yyyy-MM-dd-HH-mm-ss'.jpg'", Locale.UK);
     private static final DateFormat VIDEO_FILENAME_FORMAT = new SimpleDateFormat("'VID_'yyyy-MM-dd-HH-mm-ss'.avi'", Locale.UK);
     private static final String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Dolly";

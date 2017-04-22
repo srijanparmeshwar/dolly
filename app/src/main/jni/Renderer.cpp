@@ -292,10 +292,13 @@ void Renderer::renderViews(
 
 Mat Renderer::grabFrame() {
     float f = (parameters.targetDistance - parameters.dz) / parameters.targetSize;
-    Mat unrectifiedView;
     Mat rectifiedView = renderView(rectifiedA, depth, f, parameters.dz);
+
+    Mat unrectifiedView;
     warpPerspective(rectifiedView, unrectifiedView, scaleHomography(H_A.inv(), RATIO, RATIO), rectifiedView.size());
+
     parameters.dz += parameters.z_step;
+
     return unrectifiedView;
 }
 

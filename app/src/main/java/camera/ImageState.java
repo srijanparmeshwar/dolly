@@ -2,14 +2,13 @@ package camera;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import org.opencv.core.Mat;
+import com.google.android.cameraview.CameraView;
 
-import java.io.IOException;
+import org.opencv.core.Mat;
 
 /**
  * Handles the current state of the application.
@@ -112,11 +111,7 @@ public class ImageState {
         showProgress();
 
         // Render sequence.
-        try {
-            Renderer.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getVideoPath());
-        } catch (IOException ioException) {
-            Log.e(TAG, ioException.getMessage());
-        }
+        Renderer.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getVideoPath());
 
         // Hide loading bar and left and right previews on completion.
         hideAll();
