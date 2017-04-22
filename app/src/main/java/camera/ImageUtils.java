@@ -23,7 +23,8 @@ import java.util.Locale;
 public class ImageUtils {
 
     // Filename constants to create new image names.
-    private static final DateFormat FILENAME_FORMAT = new SimpleDateFormat("'IMG_'yyyy-MM-dd-HH-mm-ss'.jpg'", Locale.UK);
+    private static final DateFormat IMAGE_FILENAME_FORMAT = new SimpleDateFormat("'IMG_'yyyy-MM-dd-HH-mm-ss'.jpg'", Locale.UK);
+    private static final DateFormat VIDEO_FILENAME_FORMAT = new SimpleDateFormat("'VID_'yyyy-MM-dd-HH-mm-ss'.avi'", Locale.UK);
     private static final String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Dolly";
 
     /**
@@ -78,16 +79,19 @@ public class ImageUtils {
     }
 
     public static void save(Mat image) {
-        String filename = FILENAME_FORMAT.format(new Date());
-        save(filename, image);
+        Imgcodecs.imwrite(getImagePath(), image);
     }
 
     public static void save(String filename, Mat image) {
-        Imgcodecs.imwrite(directoryPath + "/" + filename, image);
+        Imgcodecs.imwrite(getPath(filename), image);
     }
 
-    public static String getPath() {
-        return getPath(FILENAME_FORMAT.format(new Date()));
+    public static String getImagePath() {
+        return getPath(IMAGE_FILENAME_FORMAT.format(new Date()));
+    }
+
+    public static String getVideoPath() {
+        return getPath(VIDEO_FILENAME_FORMAT.format(new Date()));
     }
 
     public static String getPath(String filename) {

@@ -7,16 +7,14 @@
 extern "C" {
 #endif
 
-/*
- * Main JNI call to render the dolly zoom sequence given
- * the input frames.
- *
- * Class:     camera_DollyJNI
- * Method:    render
- * Signature: (JJLjava/lang/String;)V
- */
+JNIEXPORT jlong JNICALL Java_camera_DollyJNI_create
+(JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jboolean);
+
+JNIEXPORT void JNICALL Java_camera_DollyJNI_process
+        (JNIEnv *, jclass, jlong);
+
 JNIEXPORT void JNICALL Java_camera_DollyJNI_render
-(JNIEnv *, jclass, jlong, jlong, jstring);
+        (JNIEnv *, jclass, jlong, jstring);
 
 #ifdef __cplusplus
 }

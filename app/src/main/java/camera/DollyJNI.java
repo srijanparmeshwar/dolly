@@ -15,7 +15,11 @@ public class DollyJNI {
      * path.
      * @param leftFrame - address of left frame.
      * @param rightFrame - address of right frame.
-     * @param path - path to save the video.
      */
-    public native static void render(long leftFrame, long rightFrame, String path);
+    public native static long create(long leftFrame, long rightFrame, float targetSize, float targetDistance, float fps, float length, boolean path);
+
+    public native static void process(long address);
+
+    public native static void render(long address, String path);
+
 }

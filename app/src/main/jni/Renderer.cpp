@@ -9,20 +9,49 @@ using namespace std;
 // Image sizes.
 const int ASPECT_WIDTH = 3;
 const int ASPECT_HEIGHT = 4;
-const int DOWNSAMPLE_SIZE = 96;
+const int DOWNSAMPLE_SIZE = 80;
 
 const int WIDTH = DOWNSAMPLE_SIZE * ASPECT_WIDTH;
 const int HEIGHT = DOWNSAMPLE_SIZE * ASPECT_HEIGHT;
 
-const int RENDER_SIZE = DOWNSAMPLE_SIZE * 3;
+const int RENDER_SIZE = DOWNSAMPLE_SIZE * 2;
 const int RENDER_WIDTH = RENDER_SIZE * ASPECT_WIDTH;
 const int RENDER_HEIGHT = RENDER_SIZE * ASPECT_HEIGHT;
 
 const float RATIO = ((float) RENDER_SIZE) / ((float) DOWNSAMPLE_SIZE);
 
 // Constructor and destructor.
-Renderer::Renderer(Mat frameA, Mat frameB)
-	: A(frameA), B(frameB) {
+Renderer::Renderer(Mat frameA,
+                   Mat frameB,
+                   float targetDistance,
+                   float targetSize,
+                   float fps,
+                   float length,
+                   Renderer::PATH path
+    ) : A(frameA), B(frameB), parameters() {
+
+    int N = (int) fps * length;
+    float cameraDistance = targetDistance / 5;
+
+    float z_step;
+    float dz;
+    switch (path) {
+        case Renderer::FORWARD:
+            z_step = cameraDistance / N;
+            dz = 0;
+            break;
+        case Renderer::BACKWARD:
+            z_step = - cameraDistance / N;
+            dz = cameraDistance;
+            break;
+    }
+
+    parameters.fps = fps;
+    parameters.length = length;
+    parameters.dz = dz;
+    parameters.targetDistance = targetDistance;
+    parameters.targetSize = targetSize;
+    parameters.z_step = z_step;
 }
 
 Renderer::~Renderer() {
@@ -228,10 +257,12 @@ void Renderer::estimateDepth() {
 	warpPerspective(downsampledB, rectifiedB, scaleHomography(H_B, RATIO, RATIO), downsampledB.size());
 }
 
+/*
 void Renderer::renderViews(
 		string filename, Renderer::PATH renderPath = Renderer::FORWARD,
-		float targetSize = 3, float targetDistance = 3, float fps = 1, float videoLength = 2
+		float targetSize = 3, float targetDistance = 3, float fps = 30, float videoLength = 2
 	) {
+
 	int N = (int) fps * videoLength;
 	float cameraDistance = targetDistance / 5;
 
@@ -257,11 +288,21 @@ void Renderer::renderViews(
 		dz += z_step;
 		f = (targetDistance - dz) / targetSize;
 	}
-	imwrite(filename, unrectifiedView);
+}*/
+
+Mat Renderer::grabFrame() {
+    float f = (parameters.targetDistance - parameters.dz) / parameters.targetSize;
+    Mat unrectifiedView;
+    Mat rectifiedView = renderView(rectifiedA, depth, f, parameters.dz);
+    warpPerspective(rectifiedView, unrectifiedView, scaleHomography(H_A.inv(), RATIO, RATIO), rectifiedView.size());
+    parameters.dz += parameters.z_step;
+    return unrectifiedView;
 }
 
-
 void Renderer::render(string path) {
-	estimateDepth();
-	renderViews(path, Renderer::FORWARD, 3, 3);
+    int N = (int) (parameters.fps * parameters.length);
+    VideoWriter writer(path, CV_FOURCC('M', 'J', 'P', 'G'), parameters.fps, Size(RENDER_WIDTH, RENDER_HEIGHT));
+	for (int frame = 0; frame < N; frame++) {
+        writer << grabFrame();
+    }
 }

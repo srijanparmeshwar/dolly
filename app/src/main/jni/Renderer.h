@@ -22,23 +22,42 @@ class Renderer {
 
 	cv::Mat depth;
 
-	enum PATH {
-		FORWARD,
-		BACKWARD
+	struct Parameters {
+        float fps;
+        float length;
+		float targetDistance;
+		float targetSize;
+		float z_step;
+		float dz;
 	};
 
-	// Estimate depth using stereo matching.
-	void estimateDepth();
+	Parameters parameters;
+
 	// Render novel views along given path.
-	void renderViews(
+	/*void renderViews(
 			std::string filename, Renderer::PATH path,
 			float targetSize, float targetDistance, float fps, float videoLength
-		);
+		);*/
 
 	public:
-		Renderer(cv::Mat frameA, cv::Mat frameB);
+        enum PATH {
+            FORWARD,
+            BACKWARD
+        };
+
+		Renderer(cv::Mat frameA,
+                 cv::Mat frameB,
+                 float targetDistance,
+                 float targetSize,
+                 float fps,
+                 float length,
+                 PATH path);
 		~Renderer();
-		void render(std::string path);
+		// Estimate depth using stereo matching.
+		void estimateDepth();
+		cv::Mat grabFrame();
+        void render(std::string path);
+		//void render(std::string path);
 };
 
 #endif

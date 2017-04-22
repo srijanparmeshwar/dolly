@@ -2,11 +2,14 @@ package camera;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import org.opencv.core.Mat;
+
+import java.io.IOException;
 
 /**
  * Handles the current state of the application.
@@ -34,10 +37,6 @@ public class ImageState {
 
         // Initialise state as prepared for capture of left view.
         this.progress = LEFT;
-
-        // Set preview transparencies.
-        this.leftPreview.setAlpha(0.65f);
-        this.rightPreview.setAlpha(0.65f);
     }
 
     public void processFrame(byte[] data) {
@@ -113,7 +112,11 @@ public class ImageState {
         showProgress();
 
         // Render sequence.
-        DollyJNI.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getPath("test.jpg"));
+        try {
+            Renderer.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getVideoPath());
+        } catch (IOException ioException) {
+            Log.e(TAG, ioException.getMessage());
+        }
 
         // Hide loading bar and left and right previews on completion.
         hideAll();

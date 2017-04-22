@@ -7,4 +7,5 @@
     <string name="camera_permission_not_granted">Camera permission not granted</string>
     <string name="storage_permission_confirmation">Storage permission granted</string>
     <string name="camera_permission_confirmation">Camera permission granted</string>
+    <string name="preview_description">Preview of captured image.</string>
 </resources>
