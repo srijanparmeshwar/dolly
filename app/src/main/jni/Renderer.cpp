@@ -257,39 +257,6 @@ void Renderer::estimateDepth() {
 	warpPerspective(downsampledB, rectifiedB, scaleHomography(H_B, RATIO, RATIO), downsampledB.size());
 }
 
-/*
-void Renderer::renderViews(
-		string filename, Renderer::PATH renderPath = Renderer::FORWARD,
-		float targetSize = 3, float targetDistance = 3, float fps = 30, float videoLength = 2
-	) {
-
-	int N = (int) fps * videoLength;
-	float cameraDistance = targetDistance / 5;
-
-	float z_step;
-	float dz;
-	switch (renderPath) {
-		case Renderer::FORWARD:
-			z_step = cameraDistance / N;
-			dz = 0;
-			break;
-		case Renderer::BACKWARD:
-			z_step = - cameraDistance / N;
-			dz = cameraDistance;
-			break;
-	}
-
-	float f = (targetDistance - dz) / targetSize;
-
-	Mat unrectifiedView;
-	for (int frame = 0; frame < N; frame++) {
-		Mat rectifiedView = renderView(rectifiedA, depth, f, dz);
-		warpPerspective(rectifiedView, unrectifiedView, scaleHomography(H_A.inv(), RATIO, RATIO), rectifiedView.size());
-		dz += z_step;
-		f = (targetDistance - dz) / targetSize;
-	}
-}*/
-
 Mat Renderer::grabFrame() {
     float f = (parameters.targetDistance - parameters.dz) / parameters.targetSize;
     Mat rectifiedView = renderView(rectifiedA, depth, f, parameters.dz);

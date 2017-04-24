@@ -8,7 +8,7 @@ android {
         applicationId "srijanparmeshwar.dolly"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
+        versionCode 3
         versionName "0.1"
     }
 

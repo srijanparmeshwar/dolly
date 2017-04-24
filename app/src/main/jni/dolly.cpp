@@ -1,5 +1,4 @@
 #include "dolly.h"
-
 #include "Renderer.h"
 
 using namespace cv;
