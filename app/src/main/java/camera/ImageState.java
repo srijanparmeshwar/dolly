@@ -1,6 +1,7 @@
 package camera;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,8 @@ import android.widget.ProgressBar;
 import com.google.android.cameraview.CameraView;
 
 import org.opencv.core.Mat;
+
+import srijanparmeshwar.dolly.RenderActivity;
 
 /**
  * Handles the current state of the application.
@@ -115,5 +118,7 @@ public class ImageState {
 
         // Hide loading bar and left and right previews on completion.
         hideAll();
+
+        host.startActivity(new Intent(host, RenderActivity.class));
     }
 }

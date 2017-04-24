@@ -15,7 +15,6 @@ LOCAL_C_INCLUDES += $(OCV_ANDROID)/native/jni/include
 LOCAL_C_INCLUDES += $(GLM)
 LOCAL_SRC_FILES += DepthEstimator.cpp
 LOCAL_SRC_FILES += MeshGenerator.cpp
-LOCAL_SRC_FILES += Renderer2.cpp
 LOCAL_SRC_FILES += Renderer.cpp
 LOCAL_SRC_FILES += dolly.cpp
 LOCAL_LDLIBS += -llog
