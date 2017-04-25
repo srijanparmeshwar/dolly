@@ -1,45 +1,49 @@
 #include "Renderer.h"
+#include "shaders.h"
 
-inline float calculate_fov(float s, float z, float dz) {
-    return 2.0f * atan(s / (2  * (z - dz)));
-}
-
-glm::mat4 Renderer::projectionMatrix(float fov) {
-    glm::mat4 camera = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1), glm::vec3(0, -1, 0));
-    glm::mat4 projection = glm::perspective(fov, ((float) width) / ((float) height), 0.1f, 5.0f);
-    return projection * camera;
-}
+#include <cmath>
 
 void Renderer::init(std::string vertexShader, std::string fragmentShader) {
-    vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-    fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+    // Create shader locations.
+    GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
+    // Compile and check vertex shader.
     const char* vertexSource = vertexShader.c_str();
     glShaderSource(vertexShaderID, 1, &vertexSource, NULL);
     glCompileShader(vertexShaderID);
+    checkShader(vertexShaderID);
 
-    const char* fragmentSource = vertexShader.c_str();
+    // Compile and check fragment shader.
+    const char* fragmentSource = fragmentShader.c_str();
     glShaderSource(fragmentShaderID, 1, &fragmentSource, NULL);
     glCompileShader(fragmentShaderID);
+    checkShader(fragmentShaderID);
 
+    // Create, compile, link and check program.
     programID = glCreateProgram();
     glAttachShader(programID, vertexShaderID);
     glAttachShader(programID, fragmentShaderID);
     glLinkProgram(programID);
+    checkProgram(programID);
 
+    // Remove used shaders after linking.
     glDetachShader(programID, vertexShaderID);
     glDetachShader(programID, fragmentShaderID);
 
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
 
+    // Find variable locations.
+    vertexID = glGetAttribLocation(programID, "vPos");
+    colourID = glGetAttribLocation(programID, "vCol");
     projectionID = glGetUniformLocation(programID, "projectionMatrix");
     zID = glGetUniformLocation(programID, "z");
 
+    // Enable depth buffering.
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
-
 
 void Renderer::setMesh(std::vector<float> vertices, std::vector<float> colours) {
     glGenBuffers(1, &vertexBuffer);
@@ -50,6 +54,7 @@ void Renderer::setMesh(std::vector<float> vertices, std::vector<float> colours) 
     glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * colours.size(), &(colours.front()), GL_STATIC_DRAW);
 
+    // Number of triangles.
     N = vertices.size() / 3;
 }
 
@@ -58,9 +63,14 @@ void Renderer::onSurfaceChanged(int w, int h) {
     height = h;
 }
 
+glm::mat4 Renderer::projectionMatrix(float fov) {
+    glm::mat4 camera = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+    glm::mat4 projection = glm::perspective(fov, ((float) width) / ((float) height), 0.0f, 24.0f);
+    return projection * camera;
+}
+
 void Renderer::draw(float dz) {
-    float fov = calculate_fov(targetSize, targetDistance, z);
-    glm::mat4 glmProjectionMatrix = projectionMatrix(fov);
+    glm::mat4 glmProjectionMatrix = projectionMatrix(1.25f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -69,32 +79,32 @@ void Renderer::draw(float dz) {
     glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(glmProjectionMatrix));
     glUniform1fv(zID, 1, &z);
 
-    glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glVertexAttribPointer(
-            0,
+            vertexID,
             3,
             GL_FLOAT,
             GL_FALSE,
             0,
             0
     );
+    glEnableVertexAttribArray(vertexID);
 
-    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
     glVertexAttribPointer(
-            1,
+            colourID,
             3,
             GL_FLOAT,
             GL_FALSE,
             0,
             0
     );
+    glEnableVertexAttribArray(colourID);
 
-    glDrawArrays(GL_TRIANGLES, 0, N / 3);
+    glDrawArrays(GL_TRIANGLES, 0, N);
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(vertexID);
+    glDisableVertexAttribArray(colourID);
 
     z += dz;
 }

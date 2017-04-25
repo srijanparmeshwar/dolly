@@ -1,10 +1,10 @@
 attribute vec3 vPos;
-attribute in vec3 vCol;
+attribute vec3 vCol;
 uniform mat4 projectionMatrix;
 uniform float z;
-out vec3 colour;
+varying vec3 colour;
 
 void main() {
 	colour = vCol;
-	gl_Position = projectionMatrix * vec4(vPos, 1.0);
+	gl_Position = projectionMatrix * vec4(vPos.x + cos(z) / 10.0, vPos.y + sin(z) / 10.0, vPos.z, 1.0);
 }

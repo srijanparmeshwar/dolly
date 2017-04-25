@@ -15,8 +15,8 @@ import srijanparmeshwar.dolly.RenderActivity;
  */
 public class ImageState {
     private final Activity host;
-    private final ImageView leftPreview;
-    private final ImageView rightPreview;
+    private final ImageView previewA;
+    private final ImageView previewB;
     private final ProgressBar progressBar;
 
     private int progress;
@@ -26,12 +26,10 @@ public class ImageState {
     private static final int LEFT = 0;
     private static final int RIGHT = 1;
 
-    private static final String TAG = "ImageState";
-
     public ImageState(Activity host, ImageView leftPreview, ImageView rightPreview, ProgressBar progressBar) {
         this.host = host;
-        this.leftPreview = leftPreview;
-        this.rightPreview = rightPreview;
+        this.previewA = leftPreview;
+        this.previewB = rightPreview;
         this.progressBar = progressBar;
 
         // Initialise state as prepared for capture of left view.
@@ -44,11 +42,11 @@ public class ImageState {
         // Update UI and state.
         switch (progress) {
             case LEFT:
-                handleLeftFrame(data);
+                handleFrameA(data);
                 progress = RIGHT;
                 break;
             case RIGHT:
-                handleRightFrame(data);
+                handleFrameB(data);
                 progress = LEFT;
                 break;
             default:
@@ -66,17 +64,17 @@ public class ImageState {
     }
 
     private void hideAll() {
-        setVisibility(leftPreview, false);
-        setVisibility(rightPreview, false);
+        setVisibility(previewA, false);
+        setVisibility(previewB, false);
         setVisibility(progressBar, false);
     }
 
-    private void showLeft() {
-        setVisibility(leftPreview, true);
+    private void showA() {
+        setVisibility(previewA, true);
     }
 
-    private void showRight() {
-        setVisibility(rightPreview, true);
+    private void showB() {
+        setVisibility(previewB, true);
     }
 
     private void showProgress() {
@@ -92,18 +90,18 @@ public class ImageState {
         });
     }
 
-    private void handleLeftFrame(byte[] frame) {
+    private void handleFrameA(byte[] frame) {
         // Update left frame.
         frameA = frame;
-        updatePreview(leftPreview, ImageUtils.getPreview(frameA));
-        showLeft();
+        updatePreview(previewA, ImageUtils.getPreview(frameA));
+        showA();
     }
 
-    private void handleRightFrame(byte[] frame) {
+    private void handleFrameB(byte[] frame) {
         // Update right frame.
         frameB = frame;
-        updatePreview(rightPreview, ImageUtils.getPreview(frameB));
-        showRight();
+        updatePreview(previewB, ImageUtils.getPreview(frameB));
+        showB();
 
         // Show loading bar.
         showProgress();

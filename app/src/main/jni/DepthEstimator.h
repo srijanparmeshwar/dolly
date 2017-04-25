@@ -9,15 +9,10 @@
 #include <vector>
 
 class DepthEstimator {
-    cv::Mat colour;
-    cv::Mat depth;
-
-public:
-    DepthEstimator();
-    ~DepthEstimator();
-    void estimateDepth(cv::Mat A, cv::Mat B, float downsampleRatio, float renderRatio);
-    cv::Mat getColour();
-    cv::Mat getDepth();
+    public:
+        DepthEstimator() {}
+        ~DepthEstimator() {}
+        static void estimateDepth(cv::Mat A, cv::Mat B, cv::Mat& colour, cv::Mat& depth, float downsampleRatio = 0.1f, float renderRatio = 0.25f);
 };
 
 #endif

@@ -14,11 +14,11 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * OpenCV image utility functions in Java.
+ * Image utility functions.
  */
 public class ImageUtils {
 
-    // Filename constants to create new file names.
+    // Filename constants to create image and video filenames using current time.
     private static final DateFormat IMAGE_FILENAME_FORMAT = new SimpleDateFormat("'IMG_'yyyy-MM-dd-HH-mm-ss'.jpg'", Locale.UK);
     private static final DateFormat VIDEO_FILENAME_FORMAT = new SimpleDateFormat("'VID_'yyyy-MM-dd-HH-mm-ss'.avi'", Locale.UK);
     private static final String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Dolly";
@@ -29,7 +29,7 @@ public class ImageUtils {
         return getPreview(BitmapFactory.decodeByteArray(data, 0, data.length));
     }
 
-    public static Bitmap getPreview(Bitmap frame) {
+    private static Bitmap getPreview(Bitmap frame) {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
@@ -55,6 +55,7 @@ public class ImageUtils {
             croppedBitmap = frame;
         }
 
+        frame.recycle();
         return Bitmap.createScaledBitmap(croppedBitmap, 48, 48, false);
     }
 

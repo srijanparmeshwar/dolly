@@ -1,16 +1,9 @@
 #include "DepthEstimator.h"
 #include "MeshGenerator.h"
 
-#include <cmath>
-
 using namespace cv;
 using namespace cv::ximgproc;
 using namespace std;
-
-// Constructor and destructor.
-DepthEstimator::DepthEstimator() {}
-
-DepthEstimator::~DepthEstimator() {}
 
 // Convert image to floating point grayscale.
 Mat rgb2gray(Mat rgb) {
@@ -108,7 +101,7 @@ Mat scaleHomography(Mat H, float sx, float sy) {
     return scaledH;
 }
 
-void DepthEstimator::estimateDepth(Mat A, Mat B, float downsampleRatio, float renderRatio) {
+void DepthEstimator::estimateDepth(Mat A, Mat B, Mat& colour, Mat& depth, float downsampleRatio, float renderRatio) {
     // Downsample frames for optical flow calculation.
     Mat downsampledA;
     Mat downsampledB;
@@ -137,15 +130,7 @@ void DepthEstimator::estimateDepth(Mat A, Mat B, float downsampleRatio, float re
     Mat disparity = estimateDisparity(rectifiedA, rectifiedB);
     Mat downsampledDepth = disparityToDepth(disparity);
     Mat scaledHomography = scaleHomography(H_A, renderRatio / downsampleRatio, renderRatio / downsampleRatio);
-    resize(downsampledDepth, depth, Size(), renderRatio / downsampleRatio, renderRatio / downsampleRatio);
     resize(A, downsampledA, Size(), renderRatio, renderRatio);
     warpPerspective(downsampledA, colour, scaledHomography, downsampledA.size());
-}
-
-Mat DepthEstimator::getDepth() {
-    return depth;
-}
-
-Mat DepthEstimator::getColour() {
-    return colour;
+    resize(downsampledDepth, depth, colour.size());
 }

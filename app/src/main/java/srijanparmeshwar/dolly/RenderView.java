@@ -47,11 +47,9 @@ public class RenderView extends GLSurfaceView {
 
         private long renderer;
 
-        public Renderer() {}
-
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            this.renderer = DollyJNI.create(frameA, frameB, width, height, 1, 1, vertexShader, fragmentShader);
+            this.renderer = DollyJNI.create(frameA, frameB, width, height, vertexShader, fragmentShader);
         }
 
         @Override
@@ -63,7 +61,7 @@ public class RenderView extends GLSurfaceView {
 
         @Override
         public void onDrawFrame(GL10 gl) {
-            DollyJNI.draw(renderer, 0.0f);
+            DollyJNI.draw(renderer, 0.025f);
         }
     }
 }

@@ -21,9 +21,9 @@ class Renderer {
     float z;
 
     GLuint programID;
-    GLuint vertexShaderID;
-    GLuint fragmentShaderID;
 
+    GLint vertexID;
+    GLint colourID;
     GLint projectionID;
     GLint zID;
 
@@ -37,6 +37,9 @@ class Renderer {
     public:
         Renderer(int w, int h, float s, float d) : width(w), height(w), targetSize(s), targetDistance(d), z(0.0f) {}
         ~Renderer() {
+            glDeleteBuffers(1, &vertexBuffer);
+            glDeleteBuffers(1, &colourBuffer);
+            glDeleteProgram(programID);
         }
         void init(std::string vertexShader, std::string fragmentShader);
         void setMesh(std::vector<float> vertices, std::vector<float> colours);

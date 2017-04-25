@@ -65,7 +65,9 @@ inline void push_vertices(
     push_rgb(c_br, colours);
 }
 
+// Creates a simple triangular mesh by linking neighbouring pixels.
 void trimesh(Mat image, Mat depth, vector<float>& vertices, vector<float>& colours) {
+    // Convert to float image for OpenGL.
     Mat floatImage;
     normalize(image, floatImage, 0, 1, NORM_MINMAX, CV_32FC3);
 
@@ -73,16 +75,19 @@ void trimesh(Mat image, Mat depth, vector<float>& vertices, vector<float>& colou
     size_t offset = 1;
     for (size_t v = 0; v < depth.rows - offset; v++) {
         for (size_t u = 0; u < depth.cols - offset; u++) {
+            // Coordinates of pixels.
             float u1 = u / ((float) depth.cols);
             float v1 = v / ((float) depth.rows);
             float u2 = (u + offset) / ((float) depth.cols);
             float v2 = (v + offset) / ((float) depth.rows);
 
+            // Depth values at pixels.
             float z_tl = depth.at<float>(v, u);
             float z_tr = depth.at<float>(v, u + offset);
             float z_bl = depth.at<float>(v + offset, u);
             float z_br = depth.at<float>(v + offset, u + offset);
 
+            // RGB values at pixels.
             const float* values_tl = floatImage.ptr<float>(v, u);
             const float* values_tr = floatImage.ptr<float>(v, u + offset);
             const float* values_bl = floatImage.ptr<float>(v + offset, u);

@@ -47,8 +47,21 @@ public class RenderActivity extends AppCompatActivity {
         return builder.toString();
     }
 
+    @Override
     public void onBackPressed() {
         renderView.delete();
         super.onBackPressed();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        renderView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        renderView.onResume();
     }
 }
