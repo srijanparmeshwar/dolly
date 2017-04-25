@@ -1,5 +1,5 @@
-#ifndef RENDERER2_H
-#define RENDERER2_H
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include <string>
 #include <vector>
@@ -9,7 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <EGL/egl.h>
 
 class Renderer {
@@ -36,7 +36,8 @@ class Renderer {
 
     public:
         Renderer(int w, int h, float s, float d) : width(w), height(w), targetSize(s), targetDistance(d), z(0.0f) {}
-        ~Renderer() {}
+        ~Renderer() {
+        }
         void init(std::string vertexShader, std::string fragmentShader);
         void setMesh(std::vector<float> vertices, std::vector<float> colours);
         void onSurfaceChanged(int w, int h);

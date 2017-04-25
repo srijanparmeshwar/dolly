@@ -12,6 +12,7 @@ android {
         versionName "0.1"
     }
 
+    // Native library setup.
     sourceSets.main {
         jni.srcDirs = []
     }
@@ -22,16 +23,24 @@ android {
                 'APP_BUILD_SCRIPT=src/main/jni/Android.mk',
                 'NDK_APPLICATION_MK=src/main/jni/Application.mk'
     }
-    task ocvWrapper(type: Copy, description: 'Copy Java wrapper for OpenCV') {
-        from System.getenv("OCV_ANDROID") + '/native/libs'
-        into 'src/main/jniLibs'
-        include '**/*.so'
-    }
     tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild, ocvWrapper
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    splits {
+        // Configures multiple APKs based on ABI.
+        abi {
+            enable true
+            reset()
+            include "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64", "mips", "mips64"
+        }
     }
 
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -39,9 +48,37 @@ android {
     }
 }
 
+// Map for the version code that gives each ABI a value.
+ext.abiCodes = [armeabi: 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, x86: 4, x86_64: 5,  mips: 6, mips64: 7]
+
+import com.android.build.OutputFile
+
+android.applicationVariants.all { variant ->
+
+    // Assigns a different version code for each output APK
+    // other than the universal APK.
+    variant.outputs.each { output ->
+
+        def baseAbiVersionCode =
+                project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+
+        // Because abiCodes.get() returns null for ABIs that are not mapped by ext.abiCodes,
+        // the following code does not override the version code for universal APKs.
+        // However, because we want universal APKs to have the lowest version code,
+        // this outcome is desirable.
+        if (baseAbiVersionCode != null) {
+
+            // Assigns the new version code to versionCodeOverride, which changes the version code
+            // for only the output APK, not for the variant itself. Skipping this step simply
+            // causes Gradle to use the value of variant.versionCode for the APK.
+            output.versionCodeOverride =
+                    baseAbiVersionCode * 1000 + variant.versionCode
+        }
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':openCVLibrary320')
     compile project(':cameraview')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'

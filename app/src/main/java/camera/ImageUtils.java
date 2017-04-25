@@ -1,17 +1,13 @@
 package camera;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
-
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Rect;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,50 +23,39 @@ public class ImageUtils {
     private static final DateFormat VIDEO_FILENAME_FORMAT = new SimpleDateFormat("'VID_'yyyy-MM-dd-HH-mm-ss'.avi'", Locale.UK);
     private static final String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Dolly";
 
-    /**
-     * Convert byte array format of an image into OpenCV {@link Mat}.
-     * @param data Byte array of image.
-     * @return {@link Mat} of image.
-     */
-    public static Mat decode(byte[] data) {
-        return Imgcodecs.imdecode(new MatOfByte(data), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+    private static final String TAG = "ImageUtils";
+
+    public static Bitmap getPreview(byte[] data) {
+        return getPreview(BitmapFactory.decodeByteArray(data, 0, data.length));
     }
 
-    /**
-     * Create small preview of image.
-     * @param frame Original size image.
-     * @return Reduced size image.
-     */
-    public static Mat preview(Mat frame) {
-        int width = frame.width();
-        int height = frame.height();
+    public static Bitmap getPreview(Bitmap frame) {
+        int width = frame.getWidth();
+        int height = frame.getHeight();
 
-        Rect roi = new Rect();
+        int x;
+        int y;
+        int cropWidth;
+        int cropHeight;
         if (width > height) {
-            roi.x = (width - height) / 2;
-            roi.y = 0;
-            roi.width = height;
-            roi.height = height;
-        } else if (height > width) {
-            roi.x = 0;
-            roi.y = (height - width) / 2;
-            roi.width = width;
-            roi.height = width;
+            x = (width - height) / 2;
+            y = 0;
+            cropWidth = height;
+            cropHeight = height;
+        } else {
+            x = 0;
+            y = (height - width) / 2;
+            cropWidth = width;
+            cropHeight = width;
         }
-
+        Bitmap croppedBitmap;
         if (width != height) {
-            frame = new Mat(frame, roi);
+            croppedBitmap = Bitmap.createBitmap(frame, x, y, cropWidth, cropHeight);
+        } else {
+            croppedBitmap = frame;
         }
 
-        Mat preview = new Mat();
-        Imgproc.resize(frame, preview, new Size(48, 48));
-        return preview;
-    }
-
-    public static Bitmap convertToBitmap(Mat frame) {
-        Bitmap bitmap = Bitmap.createBitmap(frame.width(), frame.height(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(frame, bitmap);
-        return bitmap;
+        return Bitmap.createScaledBitmap(croppedBitmap, 48, 48, false);
     }
 
     public static boolean prepareDirectory() {
@@ -78,12 +63,17 @@ public class ImageUtils {
         return directory.exists() || directory.mkdir();
     }
 
-    public static void save(Mat image) {
-        Imgcodecs.imwrite(getImagePath(), image);
+    public static void save(String filename, Bitmap image) {
+        File imageFile = new File(filename);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)){
+            image.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream);
+        } catch (IOException ioException) {
+            Log.e(TAG, ioException.getMessage());
+        }
     }
 
-    public static void save(String filename, Mat image) {
-        Imgcodecs.imwrite(getPath(filename), image);
+    public static void save(Bitmap image) {
+        save(getImagePath(), image);
     }
 
     public static String getImagePath() {

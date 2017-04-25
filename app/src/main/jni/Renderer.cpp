@@ -53,6 +53,11 @@ void Renderer::setMesh(std::vector<float> vertices, std::vector<float> colours) 
     N = vertices.size() / 3;
 }
 
+void Renderer::onSurfaceChanged(int w, int h) {
+    width = w;
+    height = h;
+}
+
 void Renderer::draw(float dz) {
     float fov = calculate_fov(targetSize, targetDistance, z);
     glm::mat4 glmProjectionMatrix = projectionMatrix(fov);

@@ -18,7 +18,7 @@ LOCAL_SRC_FILES += MeshGenerator.cpp
 LOCAL_SRC_FILES += Renderer.cpp
 LOCAL_SRC_FILES += dolly.cpp
 LOCAL_LDLIBS += -llog
-LOCAL_LDLIBS += -lGLESv3
+LOCAL_LDLIBS += -lGLESv2
 LOCAL_MODULE := dolly
 
 include $(BUILD_SHARED_LIBRARY)

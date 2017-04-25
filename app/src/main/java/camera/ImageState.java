@@ -3,13 +3,10 @@ package camera;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-
-import com.google.android.cameraview.CameraView;
-
-import org.opencv.core.Mat;
 
 import srijanparmeshwar.dolly.RenderActivity;
 
@@ -23,8 +20,8 @@ public class ImageState {
     private final ProgressBar progressBar;
 
     private int progress;
-    private Mat leftFrame;
-    private Mat rightFrame;
+    public static byte[] frameA;
+    public static byte[] frameB;
 
     private static final int LEFT = 0;
     private static final int RIGHT = 1;
@@ -42,18 +39,16 @@ public class ImageState {
     }
 
     public void processFrame(byte[] data) {
-        // Decode and save image.
-        Mat frame = ImageUtils.decode(data);
-        ImageUtils.save(frame);
+        ImageUtils.save(BitmapFactory.decodeByteArray(data, 0, data.length));
 
         // Update UI and state.
         switch (progress) {
             case LEFT:
-                handleLeftFrame(frame);
+                handleLeftFrame(data);
                 progress = RIGHT;
                 break;
             case RIGHT:
-                handleRightFrame(frame);
+                handleRightFrame(data);
                 progress = LEFT;
                 break;
             default:
@@ -97,28 +92,26 @@ public class ImageState {
         });
     }
 
-    private void handleLeftFrame(Mat frame) {
+    private void handleLeftFrame(byte[] frame) {
         // Update left frame.
-        leftFrame = frame;
-        updatePreview(leftPreview, ImageUtils.convertToBitmap(ImageUtils.preview(leftFrame)));
+        frameA = frame;
+        updatePreview(leftPreview, ImageUtils.getPreview(frameA));
         showLeft();
     }
 
-    private void handleRightFrame(Mat frame) {
+    private void handleRightFrame(byte[] frame) {
         // Update right frame.
-        rightFrame = frame;
-        updatePreview(rightPreview, ImageUtils.convertToBitmap(ImageUtils.preview(rightFrame)));
+        frameB = frame;
+        updatePreview(rightPreview, ImageUtils.getPreview(frameB));
         showRight();
 
         // Show loading bar.
         showProgress();
 
-        // Render sequence.
-        Renderer.render(leftFrame.getNativeObjAddr(), rightFrame.getNativeObjAddr(), ImageUtils.getVideoPath());
+        Intent renderIntent = new Intent(host, RenderActivity.class);
+        host.startActivity(renderIntent);
 
         // Hide loading bar and left and right previews on completion.
         hideAll();
-
-        host.startActivity(new Intent(host, RenderActivity.class));
     }
 }

@@ -12,28 +12,22 @@ public class DollyJNI {
 
     /**
      * Creates Renderer object using JNI.
-     * @param leftFrame Address of left frame.
-     * @param rightFrame Address of right frame.
+     * @param frameA Bytes of first frame.
+     * @param frameB Bytes of second frame.
+     * @param w Width of GL view.
+     * @param h Height of GL view.
      * @param targetSize Target size of object to keep constant.
      * @param targetDistance Target distance of object.
-     * @param fps Frame rate of video in frames per second.
-     * @param length Length of video in seconds.
-     * @param path Forwards or backwards (true for forwards, false for backwards).
+     * @param vertexShader Source code for vertex shader.
+     * @param fragmentShader Source code for fragment shader.
      * @return Native address of Renderer.
      */
-    public native static long create(long leftFrame, long rightFrame, float targetSize, float targetDistance, float fps, float length, boolean path);
+    public native static long create(byte[] frameA, byte[] frameB, int w, int h, float targetSize, float targetDistance, String vertexShader, String fragmentShader);
 
-    /**
-     * Calculate the depth map from the input stereo views.
-     * @param address Native address of Renderer.
-     */
-    public native static void process(long address);
+    public native static void onSurfaceChanged(long renderer, int w, int h);
 
-    /**
-     * Render and save video to given path.
-     * @param address Native address of Renderer.
-     * @param path File path to save the video.
-     */
-    public native static void render(long address, String path);
+    public native static void draw(long renderer, float dz);
+
+    public native static void delete(long renderer);
 
 }
