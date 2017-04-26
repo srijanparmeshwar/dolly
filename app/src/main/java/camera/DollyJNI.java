@@ -1,8 +1,7 @@
 package camera;
 
 /**
- * JNI interface for native library to render
- * dolly zoom effect.
+ * JNI interface for native library for OpenCV and OpenGL functions.
  */
 public class DollyJNI {
     static {
@@ -12,28 +11,35 @@ public class DollyJNI {
 
     /**
      * Creates Renderer object using JNI.
-     * @param leftFrame Address of left frame.
-     * @param rightFrame Address of right frame.
-     * @param targetSize Target size of object to keep constant.
-     * @param targetDistance Target distance of object.
-     * @param fps Frame rate of video in frames per second.
-     * @param length Length of video in seconds.
-     * @param path Forwards or backwards (true for forwards, false for backwards).
-     * @return Native address of Renderer.
+     * @param frameA Bytes of first frame.
+     * @param frameB Bytes of second frame.
+     * @param w Width of GL view.
+     * @param h Height of GL view.
+     * @param vertexShader Source code for vertex shader.
+     * @param fragmentShader Source code for fragment shader.
+     * @return Native address of renderer.
      */
-    public native static long create(long leftFrame, long rightFrame, float targetSize, float targetDistance, float fps, float length, boolean path);
+    public native static long create(byte[] frameA, byte[] frameB, int w, int h, String vertexShader, String fragmentShader);
 
     /**
-     * Calculate the depth map from the input stereo views.
-     * @param address Native address of Renderer.
+     * Sets the width and height for the perspective matrix.
+     * @param renderer Native address of renderer.
+     * @param w New width.
+     * @param h New height.
      */
-    public native static void process(long address);
+    public native static void onSurfaceChanged(long renderer, int w, int h);
 
     /**
-     * Render and save video to given path.
-     * @param address Native address of Renderer.
-     * @param path File path to save the video.
+     * Main render function for OpenGL.
+     * @param renderer Native address of renderer.
+     * @param dz Change in z parameter.
      */
-    public native static void render(long address, String path);
+    public native static void draw(long renderer, float dz);
+
+    /**
+     * Release resources of renderer object.
+     * @param renderer Native address of renderer.
+     */
+    public native static void delete(long renderer);
 
 }

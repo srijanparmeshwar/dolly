@@ -1,2 +1,1 @@
 include ':app', ':cameraview'
-include ':openCVLibrary320'

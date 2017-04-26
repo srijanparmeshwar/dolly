@@ -1,33 +1,70 @@
 #include "dolly.h"
-
+#include "DepthEstimator.h"
+#include "MeshGenerator.h"
 #include "Renderer.h"
 
-using namespace cv;
-using namespace std;
+// Decodes a Java byte array into an OpenCV Mat.
+cv::Mat decode(JNIEnv* env, jbyteArray jbytes) {
+    jbyte* cbytes = env->GetByteArrayElements(jbytes, NULL);
+    jsize length = env->GetArrayLength(jbytes);
 
-jlong Java_camera_DollyJNI_create(JNIEnv* env, jclass clazz, jlong pointerA, jlong pointerB, jfloat targetSize, jfloat targetDistance, jfloat fps, jfloat length, jboolean path) {
-    Renderer* renderer = new Renderer(
-            *((Mat*) pointerA),
-            *((Mat*) pointerB),
-            targetSize,
-            targetDistance,
-            fps,
-            length,
-            path ? Renderer::FORWARD : Renderer::BACKWARD
-    );
+    std::vector<uchar> data;
+    data.reserve(length);
+    for (size_t index = 0; index < length; index++) {
+        data.push_back(cbytes[index]);
+    }
+
+    cv::Mat image = cv::imdecode(data, CV_LOAD_IMAGE_UNCHANGED);
+    env->ReleaseByteArrayElements(jbytes, cbytes, JNI_ABORT);
+    return image;
+}
+
+jlong Java_camera_DollyJNI_create(JNIEnv* env, jclass clazz, jbyteArray bytesA, jbyteArray bytesB, jint w, jint h, jstring jvertexShader, jstring jfragmentShader) {
+    // Decode byte array into OpenCV Mat.
+    cv::Mat A = decode(env, bytesA);
+    cv::Mat B = decode(env, bytesB);
+
+    // Calculate depth map and rectify colour image.
+    cv::Mat depth;
+    cv::Mat colour;
+    DepthEstimator::estimateDepth(A, B, colour, depth);
+
+    // Generate triangle mesh.
+    std::vector<float> vertices;
+    std::vector<float> colours;
+    MeshGenerator::generate(colour, depth, vertices, colours);
+
+    // Set up renderer and shaders.
+    Renderer* renderer = new Renderer(w, h, 1.0f, 1.0f);
+
+    const char* cvertexShader = env->GetStringUTFChars(jvertexShader, 0);
+    const char* cfragmentShader = env->GetStringUTFChars(jfragmentShader, 0);
+
+    renderer->init(std::string(cvertexShader), std::string(cfragmentShader));
+
+    env->ReleaseStringUTFChars(jvertexShader, cvertexShader);
+    env->ReleaseStringUTFChars(jfragmentShader, cfragmentShader);
+
+    // Upload mesh.
+    renderer->setMesh(vertices, colours);
+
     return (jlong) renderer;
 }
 
-void Java_camera_DollyJNI_process(JNIEnv* env, jclass clazz, jlong address) {
+// Set the new width and height of the viewport.
+void Java_camera_DollyJNI_onSurfaceChanged(JNIEnv* env, jclass clazz, jlong address, jint w, jint h) {
     Renderer* renderer = (Renderer*) address;
-    renderer->estimateDepth();
+    renderer->onSurfaceChanged(w, h);
 }
 
-
-void Java_camera_DollyJNI_render(JNIEnv* env, jclass clazz, jlong address, jstring path) {
+// Draw the frame.
+void Java_camera_DollyJNI_draw(JNIEnv* env, jclass clazz, jlong address, jfloat dz) {
     Renderer* renderer = (Renderer*) address;
-    const char* utfPath = env->GetStringUTFChars(path, 0);
-    renderer->render(string(utfPath));
-    env->ReleaseStringUTFChars(path, utfPath);
+    renderer->draw(dz);
+}
+
+// Delete renderer object.
+void Java_camera_DollyJNI_delete(JNIEnv* env, jclass clazz, jlong address) {
+    Renderer* renderer = (Renderer*) address;
     delete renderer;
 }

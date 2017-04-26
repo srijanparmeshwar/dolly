@@ -16,8 +16,6 @@ import android.widget.ProgressBar;
 
 import com.google.android.cameraview.CameraView;
 
-import org.opencv.android.OpenCVLoader;
-
 import camera.CameraCallback;
 import camera.ImageState;
 
@@ -30,14 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton button;
 
     private static final String TAG = "MainActivity";
-
-    static {
-        if(!OpenCVLoader.initDebug()){
-            Log.d(TAG, "OpenCV not loaded.");
-        } else {
-            Log.d(TAG, "OpenCV loaded.");
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
+            Log.w(TAG, "Could not find toolbar.");
         }
     }
 
