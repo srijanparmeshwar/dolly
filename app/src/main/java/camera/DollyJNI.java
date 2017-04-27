@@ -34,7 +34,7 @@ public class DollyJNI {
      * @param renderer Native address of renderer.
      * @param dz Change in z parameter.
      */
-    public native static void draw(long renderer, float dz);
+    public native static void draw(long renderer, float dollyStep);
 
     /**
      * Release resources of renderer object.

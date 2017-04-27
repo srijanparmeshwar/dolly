@@ -6,5 +6,5 @@ varying vec3 colour;
 
 void main() {
 	colour = vCol;
-	gl_Position = projectionMatrix * vec4(vPos.x + cos(z) / 10.0, vPos.y + sin(z) / 10.0, vPos.z, 1.0);
+	gl_Position = projectionMatrix * vec4(vPos.xy, vPos.z - z, 1.0);
 }

@@ -61,7 +61,7 @@ public class RenderView extends GLSurfaceView {
 
         @Override
         public void onDrawFrame(GL10 gl) {
-            DollyJNI.draw(renderer, 0.025f);
+            DollyJNI.draw(renderer, 0.005f);
         }
     }
 }

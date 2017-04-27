@@ -16,9 +16,8 @@ class Renderer {
     int width;
     int height;
 
-    float targetSize;
     float targetDistance;
-    float z;
+    float dolly;
 
     GLuint programID;
 
@@ -35,7 +34,7 @@ class Renderer {
     glm::mat4 projectionMatrix(float fov);
 
     public:
-        Renderer(int w, int h, float s, float d) : width(w), height(w), targetSize(s), targetDistance(d), z(0.0f) {}
+        Renderer(int w, int h, float d) : width(w), height(w), targetDistance(d), dolly(0.0f) {}
         ~Renderer() {
             glDeleteBuffers(1, &vertexBuffer);
             glDeleteBuffers(1, &colourBuffer);
@@ -44,7 +43,7 @@ class Renderer {
         void init(std::string vertexShader, std::string fragmentShader);
         void setMesh(std::vector<float> vertices, std::vector<float> colours);
         void onSurfaceChanged(int w, int h);
-        void draw(float dz);
+        void draw(float dollyStep);
 };
 
 #endif

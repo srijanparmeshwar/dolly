@@ -35,7 +35,7 @@ jlong Java_camera_DollyJNI_create(JNIEnv* env, jclass clazz, jbyteArray bytesA, 
     MeshGenerator::generate(colour, depth, vertices, colours);
 
     // Set up renderer and shaders.
-    Renderer* renderer = new Renderer(w, h, 1.0f, 1.0f);
+    Renderer* renderer = new Renderer(w, h, 0.8f);
 
     const char* cvertexShader = env->GetStringUTFChars(jvertexShader, 0);
     const char* cfragmentShader = env->GetStringUTFChars(jfragmentShader, 0);
@@ -58,9 +58,9 @@ void Java_camera_DollyJNI_onSurfaceChanged(JNIEnv* env, jclass clazz, jlong addr
 }
 
 // Draw the frame.
-void Java_camera_DollyJNI_draw(JNIEnv* env, jclass clazz, jlong address, jfloat dz) {
+void Java_camera_DollyJNI_draw(JNIEnv* env, jclass clazz, jlong address, jfloat dollyStep) {
     Renderer* renderer = (Renderer*) address;
-    renderer->draw(dz);
+    renderer->draw(dollyStep);
 }
 
 // Delete renderer object.

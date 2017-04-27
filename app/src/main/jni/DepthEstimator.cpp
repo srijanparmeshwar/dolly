@@ -86,7 +86,7 @@ void calculateCorrespondences(Mat A, Mat B, vector<Point2f>& pointsA, vector<Poi
 Mat disparityToDepth(Mat disparity) {
     Mat floatDisparity;
     normalize(disparity, floatDisparity, 0, 1, NORM_MINMAX, CV_32F);
-    Mat depth = 1.0f / (floatDisparity + 0.5f);
+    Mat depth = 1.0f / (floatDisparity + 0.01f);
     return depth;
 }
 

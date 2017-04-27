@@ -63,14 +63,34 @@ void Renderer::onSurfaceChanged(int w, int h) {
     height = h;
 }
 
-glm::mat4 Renderer::projectionMatrix(float fov) {
+#define PI 3.1415926f
+
+inline float smooth_dolly(float x) {
+    // ~ 0.8 * (1 + sin(PI * (1.5 - x)) / 2 -> min = 0, max = 0.8
+    return 0.79f * (1.0f + sin(PI * (1.5f - x))) / 2.0f;
+}
+
+inline float calculate_focal_length(float d1, float d2) {
+    return d2 / d1;
+}
+
+inline float calculate_fov(float f) {
+    return atan(sqrt(2.0f) / f);
+}
+
+glm::mat4 Renderer::projectionMatrix(float z) {
+    float d1 = targetDistance;
+    float d2 = targetDistance - z;
+    float f2 = calculate_focal_length(d1, d2);
+    float fov = calculate_fov(f2);
     glm::mat4 camera = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(fov, ((float) width) / ((float) height), 0.0f, 24.0f);
+    glm::mat4 projection = glm::perspective(fov, ((float) width) / ((float) height), f2, 255.0f);
     return projection * camera;
 }
 
-void Renderer::draw(float dz) {
-    glm::mat4 glmProjectionMatrix = projectionMatrix(1.25f);
+void Renderer::draw(float dollyStep) {
+    float z = smooth_dolly(dolly);
+    glm::mat4 glmProjectionMatrix = projectionMatrix(z);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -106,5 +126,5 @@ void Renderer::draw(float dz) {
     glDisableVertexAttribArray(vertexID);
     glDisableVertexAttribArray(colourID);
 
-    z += dz;
+    dolly += dollyStep;
 }
